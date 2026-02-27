@@ -9,14 +9,21 @@ const express = require('express');
 const router = express.Router();
 
 const { searchEntity } = require('../services/tavilyService');
-const { storeEntity, storeRelationships, getConnections } = require('../services/neo4jService');
 const { scoreFraudRisk } = require('../services/fastinoService');
+const { buildDemoInvestigation } = require('../services/demoInvestigationService');
 const { extractRelatedEntities } = require('../utils/entityExtractor');
 const { getRiskLevel } = require('../utils/riskLevel');
 const logger = require('../utils/logger');
 
 // Allowed entity types
 const VALID_TYPES = ['email', 'phone', 'wallet', 'domain'];
+const REQUIRED_ENV_VARS = [
+  'TAVILY_API_KEY',
+  'FASTINO_API_KEY',
+  'NEO4J_URI',
+  'NEO4J_USER',
+  'NEO4J_PASSWORD',
+];
 
 router.post('/', async (req, res) => {
   const { type, value } = req.body;
@@ -34,7 +41,32 @@ router.post('/', async (req, res) => {
   const entityValue = value.trim();
   logger.info(`Starting investigation for ${type}: ${entityValue}`);
 
+  const missingConfig = REQUIRED_ENV_VARS.filter((envName) => !process.env[envName]);
+  const forceDemoMode = String(process.env.DEMO_MODE).toLowerCase() === 'true';
+
+  if (forceDemoMode || missingConfig.length > 0) {
+    logger.info(
+      `Returning demo investigation result${
+        missingConfig.length > 0 ? ` (missing config: ${missingConfig.join(', ')})` : ''
+      }`
+    );
+    return res.json(buildDemoInvestigation(type, entityValue));
+  }
+
   try {
+    let storeEntity;
+    let storeRelationships;
+    let getConnections;
+
+    try {
+      ({ storeEntity, storeRelationships, getConnections } = require('../services/neo4jService'));
+    } catch (neo4jLoadError) {
+      logger.error('Neo4j service unavailable', neo4jLoadError);
+      return res.status(500).json({
+        error: 'Neo4j configuration is missing or invalid. Set NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD in .env.',
+      });
+    }
+
     // ── Step 1: OSINT Search via Tavily ──────────────────────────────────────
     const tavilyData = await searchEntity(type, entityValue);
     const results = tavilyData.results || [];

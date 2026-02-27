@@ -10,17 +10,19 @@ An autonomous fraud investigation agent built with Node.js, Neo4j, Tavily Search
   3. Extract and link related entities (domains, emails, wallets) as graph relationships
   4. Score fraud risk and generate explanation via [Fastino AI](https://fastino.ai)
 - **GET /health** — Liveness check endpoint
+- **Web UI (`/`)** — Browser interface for submitting investigations and viewing risk score, evidence, and graph connections
+- **Demo mode fallback** — If integrations are not configured, `POST /investigate` returns simulated investigation data so the frontend remains usable
 
 ## Tech Stack
 
-| Concern | Technology |
-|---|---|
-| Runtime | Node.js + Express |
-| Graph database | Neo4j |
-| OSINT search | Tavily Search API |
-| AI risk scoring | Fastino AI |
-| HTTP client | Axios |
-| Config | dotenv |
+| Concern         | Technology        |
+| --------------- | ----------------- |
+| Runtime         | Node.js + Express |
+| Graph database  | Neo4j             |
+| OSINT search    | Tavily Search API |
+| AI risk scoring | Fastino AI        |
+| HTTP client     | Axios             |
+| Config          | dotenv            |
 
 ## Project Structure
 
@@ -39,6 +41,10 @@ An autonomous fraud investigation agent built with Node.js, Neo4j, Tavily Search
 │   ├── entityExtractor.js    # Extract related entities from OSINT results
 │   ├── riskLevel.js          # riskScore → riskLevel helper
 │   └── logger.js             # Step-by-step investigation logger
+├── public/
+│   ├── index.html            # Frontend page
+│   ├── styles.css            # Frontend styles
+│   └── frontend.js           # Frontend logic
 └── .env.example              # Environment variable template
 ```
 
@@ -64,14 +70,31 @@ npm start
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `TAVILY_API_KEY` | Tavily Search API key |
-| `FASTINO_API_KEY` | Fastino AI API key |
-| `NEO4J_URI` | Neo4j connection URI (e.g. `bolt://localhost:7687`) |
-| `NEO4J_USER` | Neo4j username |
-| `NEO4J_PASSWORD` | Neo4j password |
-| `PORT` | Server port (default: `3000`) |
+| Variable          | Description                                         |
+| ----------------- | --------------------------------------------------- |
+| `TAVILY_API_KEY`  | Tavily Search API key                               |
+| `FASTINO_API_KEY` | Fastino AI API key                                  |
+| `NEO4J_URI`       | Neo4j connection URI (e.g. `bolt://localhost:7687`) |
+| `NEO4J_USER`      | Neo4j username                                      |
+| `NEO4J_PASSWORD`  | Neo4j password                                      |
+| `DEMO_MODE`       | Force demo responses (`true` or `false`)            |
+| `PORT`            | Server port (default: `3000`)                       |
+
+## Web Interface
+
+After starting the server, open:
+
+`http://localhost:3000/`
+
+Use the form to submit an entity type and value. The UI calls `POST /investigate` and displays:
+
+- risk score and risk level
+- AI-generated summary
+- evidence snippets
+- graph connections
+
+If required credentials are missing, the endpoint automatically responds with simulated demo data.
+Set `DEMO_MODE=true` in `.env` to force demo responses even when credentials are present.
 
 ## API Reference
 
@@ -80,6 +103,7 @@ npm start
 Returns service liveness status.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -93,6 +117,7 @@ Returns service liveness status.
 Runs the full fraud investigation flow.
 
 **Request body:**
+
 ```json
 {
   "type": "email | phone | wallet | domain",
@@ -101,16 +126,14 @@ Runs the full fraud investigation flow.
 ```
 
 **Response:**
+
 ```json
 {
   "entity": "suspicious@example.com",
   "riskScore": 82,
   "riskLevel": "Critical",
   "summary": "This email address has been linked to multiple phishing campaigns...",
-  "evidence": [
-    "User reports on ScamAdviser indicate...",
-    "..."
-  ],
+  "evidence": ["User reports on ScamAdviser indicate...", "..."],
   "graphConnections": [
     { "value": "evil-domain.com", "type": "domain" },
     { "value": "0xABCDEF...", "type": "wallet" }
@@ -120,12 +143,12 @@ Runs the full fraud investigation flow.
 
 **Risk levels:**
 
-| Score range | Level |
-|---|---|
-| 0–39 | Low |
-| 40–59 | Medium |
-| 60–79 | High |
-| 80–100 | Critical |
+| Score range | Level    |
+| ----------- | -------- |
+| 0–39        | Low      |
+| 40–59       | Medium   |
+| 60–79       | High     |
+| 80–100      | Critical |
 
 ## Deployment (Render)
 

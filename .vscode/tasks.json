@@ -1,0 +1,68 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "run-fraudlensai",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "run-fraudlensai-shell",
+			"type": "shell",
+			"command": "npm start",
+			"isBackground": true
+		},
+		{
+			"label": "diagnose-startup",
+			"type": "shell",
+			"command": "npm start",
+			"isBackground": false
+		},
+		{
+			"label": "start-server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "run-fraudlensai-now",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "install-deps",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"install"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "start-app",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"start"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "commit-and-push",
+			"type": "shell",
+			"command": "git add . && git commit -m \"Add frontend and demo investigation fallback\" && git push origin main",
+			"isBackground": false
+		}
+	]
+}

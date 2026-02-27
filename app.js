@@ -6,10 +6,12 @@
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const app = express();
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/health', require('./routes/health'));

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FraudLensAI</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>FraudLensAI</h1>
+      <p class="subtitle">
+        Investigate suspicious entities with OSINT, graph links, and AI risk
+        scoring.
+      </p>
+
+      <form id="investigate-form" class="card">
+        <label for="type">Entity Type</label>
+        <select id="type" name="type" required>
+          <option value="email">Email</option>
+          <option value="phone">Phone</option>
+          <option value="wallet">Wallet</option>
+          <option value="domain">Domain</option>
+        </select>
+
+        <label for="value">Entity Value</label>
+        <input
+          id="value"
+          name="value"
+          type="text"
+          placeholder="suspicious@example.com"
+          required
+        />
+
+        <button id="submit-btn" type="submit">Investigate</button>
+      </form>
+
+      <section id="status" class="status" aria-live="polite"></section>
+
+      <section id="result" class="card hidden">
+        <h2>Investigation Result</h2>
+        <div class="result-grid">
+          <p><strong>Entity:</strong> <span id="result-entity"></span></p>
+          <p>
+            <strong>Risk Score:</strong> <span id="result-risk-score"></span>
+          </p>
+          <p>
+            <strong>Risk Level:</strong> <span id="result-risk-level"></span>
+          </p>
+        </div>
+
+        <h3>Summary</h3>
+        <p id="result-summary"></p>
+
+        <h3>Evidence</h3>
+        <ul id="result-evidence"></ul>
+
+        <h3>Graph Connections</h3>
+        <ul id="result-connections"></ul>
+      </section>
+    </main>
+
+    <script src="/frontend.js"></script>
+  </body>
+</html>
