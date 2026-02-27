@@ -1,0 +1,28 @@
+{
+  "name": "fraudlensai",
+  "version": "1.0.0",
+  "description": "Autonomous fraud investigation agent powered by OSINT, graph analytics, and AI risk scoring.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siddz415/FraudLensAI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/siddz415/FraudLensAI/issues"
+  },
+  "homepage": "https://github.com/siddz415/FraudLensAI#readme",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "neo4j-driver": "^6.0.1"
+  }
+}
